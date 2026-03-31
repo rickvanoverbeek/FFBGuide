@@ -1,56 +1,43 @@
 # FFB Hub - Linode Deployment Guide
 
-## Vereisten op je Linode
-- Ubuntu 22.04+ of Debian 12+
-- Minimaal 1GB RAM (2GB aanbevolen)
-- Root/sudo toegang
+## Stap 1: Clone de repo op je Linode
 
-## Stap 1: Server voorbereiden
-
-SSH naar je Linode:
 ```bash
 ssh root@YOUR_LINODE_IP
+cd /var/www/html/ffbguide/public_html
+git clone https://github.com/JOUW_USERNAME/JOUW_REPO.git .
 ```
 
-## Stap 2: Project uploaden
+> Let op de `.` aan het eind — dat cloned direct in public_html zonder extra map.
+> Als public_html niet leeg is, doe dan eerst: `rm -rf /var/www/html/ffbguide/public_html/*`
 
-Optie A - Via Git (aanbevolen):
-```bash
-cd /var/www
-git clone YOUR_REPO_URL ffbhub
-cd ffbhub
-```
-
-Optie B - Via SCP (vanaf je lokale machine):
-```bash
-scp -r . root@YOUR_LINODE_IP:/var/www/ffbhub/
-```
-
-## Stap 3: Server setup uitvoeren
+## Stap 2: Server setup (eenmalig)
 
 ```bash
-cd /var/www/ffbhub
+cd /var/www/html/ffbguide/public_html
 sudo bash deploy/setup-server.sh
 ```
 
-Dit installeert: Node.js 20, PM2, Apache + proxy modules, en configureert de firewall.
+Dit installeert Node.js 20, PM2, en configureert Apache proxy modules.
 
-## Stap 4: Apache configureren
+## Stap 3: Apache configureren
 
-Pas het IP-adres aan:
 ```bash
 sudo nano /etc/apache2/sites-available/ffbhub.conf
-# Verander YOUR_LINODE_IP naar je echte IP
+```
+
+Verander `YOUR_LINODE_IP` naar je echte Linode IP-adres. Dan:
+
+```bash
 sudo systemctl reload apache2
 ```
 
-## Stap 5: Environment variables instellen
+## Stap 4: Environment variables
 
 ```bash
-nano /var/www/ffbhub/.env.local
+nano /var/www/html/ffbguide/public_html/.env.local
 ```
 
-Vul in:
 ```
 NEXT_PUBLIC_SANITY_PROJECT_ID=je_sanity_project_id
 NEXT_PUBLIC_SANITY_DATASET=production
@@ -62,63 +49,49 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=je_supabase_anon_key
 SANITY_REVALIDATE_SECRET=een_random_secret
 ```
 
-## Stap 6: Deployen
+## Stap 5: Deployen
 
 ```bash
-cd /var/www/ffbhub
+cd /var/www/html/ffbguide/public_html
 bash deploy/deploy.sh
 ```
 
-Dit bouwt de app en start deze via PM2.
+Open daarna: `http://YOUR_LINODE_IP`
 
-## Stap 7: Testen
+## Updates deployen
 
-Open in je browser: `http://YOUR_LINODE_IP`
+Na code wijzigingen op GitHub:
+
+```bash
+cd /var/www/html/ffbguide/public_html
+bash deploy/deploy.sh
+```
+
+Het script doet automatisch `git pull`, `npm ci`, `npm run build`, en herstart PM2.
 
 ## Handige commando's
 
 ```bash
-# App status
-pm2 status
+pm2 status                  # app status
+pm2 logs ffb-hub            # logs bekijken
+pm2 restart ffb-hub         # app herstarten
+pm2 monit                   # real-time monitoring
 
-# Logs bekijken
-pm2 logs ffb-hub
-
-# App herstarten
-pm2 restart ffb-hub
-
-# Apache status
 sudo systemctl status apache2
-
-# Apache logs
 sudo tail -f /var/log/apache2/ffbhub-error.log
 ```
 
-## Updaten na code wijzigingen
+## Later: SSL + Domein
 
 ```bash
-cd /var/www/ffbhub
-git pull                    # als je git gebruikt
-bash deploy/deploy.sh       # herbouwen en herstarten
-```
+# 1. DNS A-record wijzen naar Linode IP
+# 2. Apache config aanpassen:
+sudo nano /etc/apache2/sites-available/ffbhub.conf
+#    ServerName jouwdomein.com
+#    ServerAlias www.jouwdomein.com
+sudo systemctl reload apache2
 
-## Later: SSL toevoegen met Let's Encrypt
-
-Zodra je een domeinnaam hebt:
-```bash
+# 3. SSL installeren:
 sudo apt install certbot python3-certbot-apache
 sudo certbot --apache -d jouwdomein.com -d www.jouwdomein.com
 ```
-
-Certbot past de Apache config automatisch aan voor HTTPS.
-
-## Later: Domein toevoegen
-
-1. Wijs je domein naar het Linode IP (A-record in DNS)
-2. Pas `/etc/apache2/sites-available/ffbhub.conf` aan:
-   ```
-   ServerName jouwdomein.com
-   ServerAlias www.jouwdomein.com
-   ```
-3. `sudo systemctl reload apache2`
-4. Installeer SSL (zie hierboven)

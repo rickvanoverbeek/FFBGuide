@@ -73,7 +73,14 @@
       "Bash(ls -la \"C:/Users/OverbeekvanR\\(Rick\\)/OneDrive - Primevest Capital Partners Holding B.V/Documenten/_Development/FFB/src/app/admin/profiles/\")",
       "Bash(npx next:*)",
       "Bash(ls \"/c/Users/OverbeekvanR\\(Rick\\)/OneDrive - Primevest Capital Partners Holding B.V/Documenten/_Development/FFB/deploy\")",
-      "Bash(ls \"/c/Users/OverbeekvanR\\(Rick\\)/OneDrive - Primevest Capital Partners Holding B.V/Documenten/_Development/FFB/next.config.ts\")"
+      "Bash(ls \"/c/Users/OverbeekvanR\\(Rick\\)/OneDrive - Primevest Capital Partners Holding B.V/Documenten/_Development/FFB/next.config.ts\")",
+      "Bash(find 'c:\\\\Users\\\\OverbeekvanR\\(Rick\\)\\\\OneDrive - Primevest Capital Partners Holding B.V\\\\Documenten\\\\_Development\\\\FFB' -type f -name payload.config.ts -o -type f -name payload.config.js)",
+      "Bash(ls -la \"c:\\\\Users\\\\OverbeekvanR\\(Rick\\)\\\\OneDrive - Primevest Capital Partners Holding B.V\\\\Documenten\\\\_Development\\\\FFB\")",
+      "Bash(find \"c:\\\\Users\\\\OverbeekvanR\\(Rick\\)\\\\OneDrive - Primevest Capital Partners Holding B.V\\\\Documenten\\\\_Development\\\\FFB\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" -o -name \"*.js\" -o -name \"*.md\" \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(ls -la \"c:\\\\Users\\\\OverbeekvanR\\(Rick\\)\\\\OneDrive - Primevest Capital Partners Holding B.V\\\\Documenten\\\\_Development\\\\FFB\\\\src\")",
+      "WebSearch",
+      "WebFetch(domain:payloadcms.com)"
     ]
   }
 }

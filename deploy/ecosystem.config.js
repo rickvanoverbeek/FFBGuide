@@ -4,7 +4,7 @@ module.exports = {
       name: "ffb-hub",
       script: "node",
       args: "server.js",
-      cwd: "/var/www/ffbhub/.next/standalone",
+      cwd: "/var/www/html/ffbguide/public_html/.next/standalone",
       env: {
         NODE_ENV: "production",
         PORT: 3000,

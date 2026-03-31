@@ -1,35 +1,38 @@
 #!/bin/bash
 # ============================================================
 # FFB Hub - Deploy Script
-# Run dit vanuit /var/www/ffbhub/ na elke update
+# Run dit vanuit /var/www/html/ffbguide/public_html/
 # Usage: bash deploy/deploy.sh
 # ============================================================
 
 set -e
 
-APP_DIR="/var/www/ffbhub"
+APP_DIR="/var/www/html/ffbguide/public_html"
 STANDALONE_DIR="$APP_DIR/.next/standalone"
 
 echo "=== Deploying FFB Hub ==="
 
 cd "$APP_DIR"
 
-# --- 1. Install dependencies ---
-echo "[1/5] Installing dependencies..."
+# --- 1. Pull latest code ---
+echo "[1/6] Pulling latest code..."
+git pull
+
+# --- 2. Install dependencies ---
+echo "[2/6] Installing dependencies..."
 npm ci --omit=dev
 
-# --- 2. Build ---
-echo "[2/5] Building production bundle..."
+# --- 3. Build ---
+echo "[3/6] Building production bundle..."
 npm run build
 
-# --- 3. Copy static assets to standalone ---
-echo "[3/5] Copying static assets..."
+# --- 4. Copy static assets to standalone ---
+echo "[4/6] Copying static assets..."
 cp -r .next/static "$STANDALONE_DIR/.next/static"
 cp -r public "$STANDALONE_DIR/public"
 
-# --- 4. Restart PM2 ---
-echo "[4/5] Restarting app with PM2..."
-cd "$STANDALONE_DIR"
+# --- 5. Restart PM2 ---
+echo "[5/6] Restarting app with PM2..."
 
 # Stop existing instance if running
 pm2 stop ffb-hub 2>/dev/null || true
@@ -41,11 +44,11 @@ pm2 start "$APP_DIR/deploy/ecosystem.config.js"
 # Save PM2 config so it survives reboot
 pm2 save
 
-# --- 5. Setup PM2 startup (first time only) ---
+# Setup PM2 startup (first time only, harmless to repeat)
 pm2 startup systemd -u root --hp /root 2>/dev/null || true
 
 echo ""
-echo "[5/5] Verifying..."
+echo "[6/6] Verifying..."
 sleep 2
 
 if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200\|304"; then
