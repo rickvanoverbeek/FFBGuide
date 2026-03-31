@@ -1,5 +1,5 @@
 {
-  "name": "ffb-temp",
+  "name": "ffb-hub",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,9 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@portabletext/react": "^6.0.3",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "@sanity/image-url": "^2.1.1",
+    "@supabase/ssr": "^0.10.0",
+    "@supabase/supabase-js": "^2.101.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.7.0",
     "next": "16.2.1",
+    "next-sanity": "^12.2.1",
+    "next-themes": "^0.4.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-dropzone": "^15.0.0",
+    "sanity": "^5.18.0",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
