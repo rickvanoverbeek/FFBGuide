@@ -14,6 +14,7 @@ import {
   getSetting,
   getSettingById,
   getSettings,
+  getSymptomsForConcept,
 } from "@/lib/content/loader";
 
 type Props = {
@@ -51,6 +52,7 @@ export default async function SettingPage({ params }: Props) {
   const range = setting.recommended_range
     ? formatRange(setting.recommended_range)
     : null;
+  const symptoms = getSymptomsForConcept(setting.concept);
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
@@ -182,6 +184,32 @@ export default async function SettingPage({ params }: Props) {
                   </span>
                   <span className="text-sm text-muted-foreground">
                     {other.summary}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Complaints this setting is used against */}
+      {symptoms.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold text-foreground">
+            Reach for this when
+          </h2>
+          <ul className="mt-4 space-y-2">
+            {symptoms.map((symptom) => (
+              <li key={symptom.slug}>
+                <Link
+                  href={symptom.href}
+                  className="block rounded-lg border border-border p-3 transition-colors hover:border-primary/40 hover:bg-muted/50"
+                >
+                  <span className="font-medium text-foreground">
+                    {symptom.label}
+                  </span>
+                  <span className="mt-0.5 block text-sm text-muted-foreground">
+                    {symptom.summary}
                   </span>
                 </Link>
               </li>

@@ -10,7 +10,9 @@ import {
   getManufacturers,
   getMatrix,
   getSettings,
+  getSymptoms,
   getUsedCategories,
+  resolveAdvice,
 } from "../src/lib/content/loader";
 
 const manufacturers = getManufacturers();
@@ -51,6 +53,32 @@ for (const concept of concepts) {
   }
 }
 
+// A symptom nobody can act on is worse than no symptom: it sends a driver to a
+// page that lists nothing to change.
+const symptoms = getSymptoms();
+for (const symptom of symptoms) {
+  const coverage = manufacturers.filter(
+    (manufacturer) =>
+      resolveAdvice(symptom, manufacturer.slug).filter(
+        (step) => step.settings.length > 0
+      ).length > 0
+  );
+  if (coverage.length === 0) {
+    problems.push(
+      `symptom "${symptom.slug}" resolves to no settings for any manufacturer`
+    );
+  } else if (coverage.length < manufacturers.length / 2) {
+    problems.push(
+      `symptom "${symptom.slug}" only resolves to settings for ${coverage.length} of ` +
+        `${manufacturers.length} manufacturers (${coverage.map((m) => m.slug).join(", ")})`
+    );
+  }
+}
+
+// Advice reads as a direction, so a control whose direction is unknown must say
+// so rather than silently inheriting the concept's.
+const unclear = settings.filter((s) => s.polarity === "unclear");
+
 const drafts = settings.filter((s) => s.status === "draft");
 const singletons = concepts.filter(
   (c) => settings.filter((s) => s.concept === c.slug).length === 1
@@ -63,6 +91,12 @@ console.log(
 );
 console.log(
   `matrix: ${matrix.reduce((n, s) => n + s.rows.length, 0)} rows × ${manufacturers.length} columns`
+);
+console.log(
+  `${symptoms.length} symptoms, ${symptoms.reduce((n, s) => n + s.advice.length, 0)} advice steps` +
+    (unclear.length
+      ? `; ${unclear.length} setting(s) with an undocumented direction: ${unclear.map((s) => s.id).join(", ")}`
+      : "")
 );
 
 if (singletons.length) {

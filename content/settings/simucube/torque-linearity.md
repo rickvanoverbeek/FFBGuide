@@ -4,6 +4,7 @@ software: "Simucube Tuner"
 setting_name: "Torque Linearity"
 concept: force-linearity
 category: force_limit
+polarity: unclear
 summary: "A gamma filter that changes how the wheel reacts to small torque signals."
 impact: "Adjusting it changes how much of the range is spent on weak forces versus strong ones, which alters where detail sits rather than how strong the peaks are."
 related_settings:

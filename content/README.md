@@ -10,6 +10,7 @@ content/
   manufacturers/<manufacturer>.md      one per brand
   concepts/<concept>.md                one per FFB concept — the matrix rows
   settings/<manufacturer>/<setting>.md one per setting in that brand's software
+  symptoms/<symptom>.md                one per complaint — the troubleshooter
 ```
 
 ## The concept key is what makes the cross-reference work
@@ -114,6 +115,41 @@ what is not.
 
 No logo or image fields exist by design — manufacturer artwork is an IP risk and
 is deliberately not part of the model.
+
+## Adding a symptom (a troubleshooter page)
+
+Symptoms point at **concepts**, never at settings, so one file covers all eight
+manufacturers and adding a brand never means editing symptoms.
+
+```markdown
+---
+label: Wheel shakes or oscillates      # the complaint in a driver's words
+summary: One line, shown in search results and on cards.
+group: stability                       # feel | stability | strength | response | comfort
+keywords:                              # phrasings people type, Dutch included
+  - oscillation
+  - schudt
+advice:
+  - concept: damping                   # must exist in content/concepts/
+    direction: raise                   # raise | lower | on | off
+    priority: 1                        # lower runs first; unique per symptom
+    why: Oscillation is velocity-driven, and damping opposes velocity directly.
+related_symptoms: [dead-around-centre]
+status: draft
+---
+
+Why the complaint happens, mechanically.
+```
+
+`direction` is written as if every control were `direct`. The renderer flips it
+for a setting marked `polarity: inverted`, and refuses to state a direction for
+`polarity: unclear`. That is the whole reason polarity exists: telling a driver
+to raise a control that runs backwards is worse than telling them nothing.
+
+The build rejects unknown concepts, duplicate priorities, dangling
+`related_symptoms` and an empty body, and `check:content` complains when a
+symptom resolves to settings for fewer than half the manufacturers — which
+usually means the advice leans on concepts almost nobody exposes.
 
 ## Status and sources
 

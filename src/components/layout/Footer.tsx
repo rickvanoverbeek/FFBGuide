@@ -66,6 +66,14 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
+                  href="/troubleshoot"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Troubleshoot by symptom
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/glossary"
                   className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >

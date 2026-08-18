@@ -48,6 +48,48 @@ const settingRef = z
     "must be a `manufacturer/setting` reference"
   );
 
+/**
+ * Which way a control's value moves relative to its concept.
+ *
+ * `direct`   — more of the concept means a higher value (Simucube's
+ *              Reconstruction Filter: higher = more smoothing).
+ * `inverted` — more of the concept means a LOWER value (Fanatec's FEI is
+ *              documented as 000 = smoothest, 100 = sharpest).
+ * `unclear`  — the manufacturer's wording does not settle it. The site says so
+ *              rather than guessing, because guessing here inverts advice.
+ */
+export const POLARITIES = ["direct", "inverted", "unclear"] as const;
+export type Polarity = (typeof POLARITIES)[number];
+
+/** What to do with a control. `direction` always refers to a `direct` control. */
+export const DIRECTIONS = ["raise", "lower", "on", "off"] as const;
+export type Direction = (typeof DIRECTIONS)[number];
+
+export const DIRECTION_LABELS: Record<Direction, string> = {
+  raise: "Raise it",
+  lower: "Lower it",
+  on: "Turn it on",
+  off: "Turn it off",
+};
+
+/** Grouping for the troubleshooter's overview page. */
+export const SYMPTOM_GROUPS = [
+  "feel",
+  "stability",
+  "strength",
+  "response",
+  "comfort",
+] as const;
+export type SymptomGroup = (typeof SYMPTOM_GROUPS)[number];
+
+export const SYMPTOM_GROUP_LABELS: Record<SymptomGroup, string> = {
+  feel: "Detail and feel",
+  stability: "Stability and safety",
+  strength: "Force levels",
+  response: "Response and delay",
+  comfort: "Comfort and fatigue",
+};
+
 export const manufacturerFrontmatter = z.object({
   name: z.string().min(1),
   /** Exact name of the tuning tool, e.g. "Simucube Tuner". */
@@ -97,6 +139,8 @@ export const settingFrontmatter = z.object({
   /** A starting point, always rendered with a disclaimer. Editorial, not factual. */
   recommended_range: recommendedRange.optional(),
   value_type: z.enum(["percentage", "numeric", "toggle", "enum"]).optional(),
+  /** Defaults to `direct`; see POLARITIES. Wrong here means inverted advice. */
+  polarity: z.enum(POLARITIES).default("direct"),
   related_settings: z.array(settingRef).default([]),
   /** URLs to official manuals/docs. Never quoted, only linked. */
   sources: z.array(z.url()).default([]),
@@ -115,7 +159,45 @@ export const settingFrontmatter = z.object({
     ),
 });
 
+/**
+ * A symptom is a complaint in the driver's words, mapped to concepts rather than
+ * to settings — so one file works for every manufacturer, and adding a
+ * manufacturer never means editing existing symptoms.
+ */
+export const adviceStep = z.object({
+  concept: slug,
+  direction: z.enum(DIRECTIONS),
+  /** Lower runs first. Unique within a symptom. */
+  priority: z.number().int().positive(),
+  /** Why this helps, in terms of the mechanism. Required — no bare arrows. */
+  why: z.string().min(1),
+});
+
+export const symptomFrontmatter = z.object({
+  /** The complaint as a driver would put it. */
+  label: z.string().min(1),
+  summary: z.string().min(1),
+  group: z.enum(SYMPTOM_GROUPS),
+  /**
+   * Phrasings people actually type, including Dutch — the matcher is
+   * language-agnostic, while the content itself stays English.
+   */
+  keywords: z.array(z.string().min(1)).default([]),
+  advice: z.array(adviceStep).min(1),
+  related_symptoms: z.array(slug).default([]),
+  sources: z.array(z.url()).default([]),
+  status: z.enum(STATUSES).default("draft"),
+  last_reviewed: z
+    .union([z.string(), z.date()])
+    .optional()
+    .transform((value) =>
+      value instanceof Date ? value.toISOString().slice(0, 10) : value
+    ),
+});
+
 export type ManufacturerFrontmatter = z.infer<typeof manufacturerFrontmatter>;
+export type SymptomFrontmatter = z.infer<typeof symptomFrontmatter>;
+export type AdviceStep = z.infer<typeof adviceStep>;
 export type ConceptFrontmatter = z.infer<typeof conceptFrontmatter>;
 export type SettingFrontmatter = z.infer<typeof settingFrontmatter>;
 export type Range = z.infer<typeof range>;

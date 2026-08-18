@@ -32,6 +32,8 @@ parked/                finished-but-unbuilt code (Supabase community, Sanity) �
 
 | Route | What it is |
 |---|---|
+| `/troubleshoot` | Describe a symptom in your own words; get the settings that influence it. |
+| `/troubleshoot/[symptom]` | One complaint, with the advice resolved into your own base's controls. |
 | `/glossary` | The cross-reference matrix: concepts × manufacturers. The primary page. |
 | `/manufacturers` | One card per brand and its tuning software. |
 | `/manufacturers/[manufacturer]` | Every setting in that software, grouped by category, plus concepts it does not expose. |
@@ -74,10 +76,27 @@ across every existing file. Categories are a fixed enum
 [content/README.md](content/README.md) has the authoring guide and the full list
 of rules the build enforces.
 
+## Two kinds of claim
+
+The site makes two claims that must not be confused, and the content model keeps
+them apart:
+
+- **What a setting is and does** comes from the manufacturer — sourced, and
+  marked `verified` only when there is a citation.
+- **Which setting fixes which complaint** (`content/symptoms/`) is our own
+  reasoning about how the controls interact. No manual states it, so every
+  troubleshooting page says so in plain language.
+
+Symptoms map to *concepts*, never to settings, so one symptom file works for all
+eight manufacturers and adding a manufacturer never means editing symptoms. A
+setting whose value runs the other way, or whose direction the manufacturer never
+documents, carries a `polarity` so advice is not silently inverted.
+
 ## Content status
 
-8 manufacturers, 35 concepts, 91 settings — 73 verified against manufacturer
-documentation or the software's own UI, 18 still draft. Draft means the label is
+8 manufacturers, 35 concepts, 91 settings, 9 symptoms with 41 advice steps —
+73 settings verified against manufacturer documentation or the software's own UI,
+18 still draft. Draft means the label is
 right but the manufacturer publishes no description, so the explanation is
 inferred; the site labels those entries openly. See the promotion checklist in
 [content/README.md](content/README.md).

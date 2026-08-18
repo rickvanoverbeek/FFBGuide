@@ -7,12 +7,17 @@ import {
   conceptFrontmatter,
   manufacturerFrontmatter,
   settingFrontmatter,
+  symptomFrontmatter,
+  SYMPTOM_GROUPS,
   type Category,
   type ConceptFrontmatter,
+  type Direction,
   type ManufacturerFrontmatter,
   type RecommendedRange,
   type SettingFrontmatter,
   type Status,
+  type SymptomFrontmatter,
+  type SymptomGroup,
 } from "./schema";
 
 /**
@@ -72,10 +77,37 @@ export interface MatrixSection {
   rows: MatrixRow[];
 }
 
+export interface Symptom extends SymptomFrontmatter {
+  slug: string;
+  href: string;
+  /** The mechanism behind the complaint, as rendered markdown. */
+  bodyHtml: string;
+}
+
+/** One setting to change, with the direction already corrected for polarity. */
+export interface ResolvedSetting {
+  setting: Setting;
+  /** The advice direction after applying the setting's polarity. */
+  direction: Direction;
+  /** True when the manufacturer's wording does not settle which way to move. */
+  directionUnclear: boolean;
+}
+
+export interface ResolvedAdviceStep {
+  concept: Concept;
+  /** The direction as written on the symptom, before polarity is applied. */
+  direction: Direction;
+  priority: number;
+  why: string;
+  /** Empty when this manufacturer exposes no control for the concept. */
+  settings: ResolvedSetting[];
+}
+
 interface Content {
   manufacturers: Manufacturer[];
   concepts: Concept[];
   settings: Setting[];
+  symptoms: Symptom[];
   byId: Map<string, Setting>;
 }
 
@@ -250,9 +282,63 @@ function load(): Content {
       a.setting_name.localeCompare(b.setting_name)
   );
 
-  cache = { manufacturers, concepts, settings, byId };
+  const symptoms: Symptom[] = readMarkdownFiles("symptoms").map(
+    ({ slug: symptomSlug, file, raw }) => {
+      const { data, content } = matter(raw);
+      const fm = parse(symptomFrontmatter, data, file);
+
+      const priorities = new Set<number>();
+      for (const step of fm.advice) {
+        if (!conceptBySlug.has(step.concept)) {
+          fail(file, `advice refers to unknown concept "${step.concept}"`);
+        }
+        if (priorities.has(step.priority)) {
+          fail(file, `duplicate advice priority ${step.priority}`);
+        }
+        priorities.add(step.priority);
+      }
+      if (!content.trim()) {
+        fail(file, "body is empty — explain the mechanism behind the complaint");
+      }
+
+      return {
+        ...fm,
+        advice: [...fm.advice].sort((a, b) => a.priority - b.priority),
+        slug: symptomSlug,
+        href: `/troubleshoot/${symptomSlug}`,
+        bodyHtml: renderMarkdown(content),
+      };
+    }
+  );
+
+  const symptomSlugs = new Set(symptoms.map((s) => s.slug));
+  for (const symptom of symptoms) {
+    for (const ref of symptom.related_symptoms) {
+      if (!symptomSlugs.has(ref)) {
+        throw new Error(
+          `Content error in symptoms/${symptom.slug}.md: related_symptoms points at "${ref}", which does not exist`
+        );
+      }
+      if (ref === symptom.slug) {
+        throw new Error(
+          `Content error in symptoms/${symptom.slug}.md: related_symptoms points at itself`
+        );
+      }
+    }
+  }
+
+  symptoms.sort((a, b) => a.label.localeCompare(b.label));
+
+  cache = { manufacturers, concepts, settings, symptoms, byId };
   return cache;
 }
+
+const OPPOSITE: Record<Direction, Direction> = {
+  raise: "lower",
+  lower: "raise",
+  on: "off",
+  off: "on",
+};
 
 export function getManufacturers(): Manufacturer[] {
   return load().manufacturers;
@@ -340,6 +426,72 @@ export function getMatrix(): MatrixSection[] {
   }));
 }
 
+export function getSymptoms(): Symptom[] {
+  return load().symptoms;
+}
+
+export function getSymptom(slug: string): Symptom | undefined {
+  return load().symptoms.find((symptom) => symptom.slug === slug);
+}
+
+/** Groups that actually have symptoms, in the canonical enum order. */
+export function getUsedSymptomGroups(): SymptomGroup[] {
+  const used = new Set(load().symptoms.map((symptom) => symptom.group));
+  return SYMPTOM_GROUPS.filter((group) => used.has(group));
+}
+
+export function getSymptomsByGroup(group: SymptomGroup): Symptom[] {
+  return load().symptoms.filter((symptom) => symptom.group === group);
+}
+
+/**
+ * Turns concept-level advice into the actual controls in one manufacturer's
+ * software, flipping the direction for inverted controls. A step with no
+ * settings is kept on purpose: "your software has no equivalent" is an answer,
+ * and dropping it silently would hide a gap.
+ */
+export function resolveAdvice(
+  symptom: Symptom,
+  manufacturer: string
+): ResolvedAdviceStep[] {
+  const { settings, concepts } = load();
+
+  return symptom.advice.map((step) => {
+    const concept = concepts.find((c) => c.slug === step.concept);
+    if (!concept) {
+      // The loader already rejected unknown concepts.
+      throw new Error(`Unknown concept "${step.concept}" in ${symptom.slug}`);
+    }
+
+    const matches = settings.filter(
+      (setting) =>
+        setting.concept === step.concept && setting.manufacturer === manufacturer
+    );
+
+    return {
+      concept,
+      direction: step.direction,
+      priority: step.priority,
+      why: step.why,
+      settings: matches.map((setting) => ({
+        setting,
+        direction:
+          setting.polarity === "inverted"
+            ? OPPOSITE[step.direction]
+            : step.direction,
+        directionUnclear: setting.polarity === "unclear",
+      })),
+    };
+  });
+}
+
+/** Symptoms whose advice touches a given concept — shown on setting pages. */
+export function getSymptomsForConcept(concept: string): Symptom[] {
+  return load().symptoms.filter((symptom) =>
+    symptom.advice.some((step) => step.concept === concept)
+  );
+}
+
 export function formatRange(range: RecommendedRange): string | null {
   const { min, max, unit } = range;
   const suffix = unit ? ` ${unit}` : "";
@@ -349,4 +501,4 @@ export function formatRange(range: RecommendedRange): string | null {
   return null;
 }
 
-export type { Category, Status };
+export type { Category, Direction, Status, SymptomGroup };

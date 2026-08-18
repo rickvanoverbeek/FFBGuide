@@ -4,6 +4,7 @@ software: "Moza Pit House"
 setting_name: "Game force filtering"
 concept: force-reconstruction
 category: filter_smoothing
+polarity: unclear
 summary: "Adjusts the bandwidth of a low-pass filter applied to the game's forces."
 impact: "More filtering gives a calmer, more comfortable wheel with less grain. Less filtering keeps the signal raw, including whatever roughness the title produces."
 related_settings: []

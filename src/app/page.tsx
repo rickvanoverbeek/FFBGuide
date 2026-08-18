@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Zap, Table2, Factory, Layers } from "lucide-react";
+import {
+  ArrowRight,
+  Factory,
+  Layers,
+  Stethoscope,
+  Table2,
+  Zap,
+} from "lucide-react";
 import { TAGLINE } from "@/lib/constants";
 import { CATEGORY_LABELS } from "@/lib/content/schema";
 import {
@@ -14,14 +21,6 @@ export default function HomePage() {
   const concepts = getConcepts();
   const settings = getSettings();
   const categories = getUsedCategories();
-
-  // A taste of the matrix: the concept covered by the most manufacturers.
-  const showcase = [...concepts]
-    .map((concept) => ({
-      concept,
-      entries: settings.filter((setting) => setting.concept === concept.slug),
-    }))
-    .sort((a, b) => b.entries.length - a.entries.length)[0];
 
   return (
     <>
@@ -46,17 +45,17 @@ export default function HomePage() {
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-              href="/glossary"
+              href="/manufacturers"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/30"
             >
-              Open the cross-reference
+              Go to Manufacturers
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/manufacturers"
+              href="/troubleshoot"
               className="inline-flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-muted"
             >
-              Browse by manufacturer
+              Fix a problem
             </Link>
           </div>
           <p className="mt-8 text-sm text-muted-foreground">
@@ -66,52 +65,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* One row of the matrix, as a teaser */}
-      {showcase && showcase.entries.length > 1 && (
-        <section className="border-y border-border bg-muted/30 py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-center text-2xl font-bold sm:text-3xl">
-              One concept, {showcase.entries.length} names
-            </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
-              {showcase.concept.summary}
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {showcase.entries.map((setting) => (
-                <Link
-                  key={setting.id}
-                  href={setting.href}
-                  className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
-                >
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                    {setting.manufacturerName}
-                  </p>
-                  <p className="mt-1 font-semibold text-foreground">
-                    {setting.setting_name}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {setting.software}
-                  </p>
-                </Link>
-              ))}
-            </div>
-            <div className="mt-8 text-center">
-              <Link
-                href="/glossary"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-link hover:underline"
-              >
-                See all {concepts.length} concepts side by side
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Three ways in */}
-      <section className="py-16 sm:py-20">
+      {/* Ways in */}
+      <section className="border-t border-border py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <Link
+              href="/troubleshoot"
+              className="rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/40"
+            >
+              <Stethoscope className="h-6 w-6 text-link" />
+              <h3 className="mt-4 font-semibold text-foreground">
+                Troubleshoot a symptom
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Describe what the wheel is doing and get the settings in your own
+                software that influence it, in the order worth trying.
+              </p>
+            </Link>
+
             <Link
               href="/glossary"
               className="rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/40"
