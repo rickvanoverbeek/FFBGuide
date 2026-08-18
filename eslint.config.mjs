@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Not built or served — see parked/README.md.
+    "parked/**",
   ]),
 ]);
 

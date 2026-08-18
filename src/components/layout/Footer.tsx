@@ -1,58 +1,98 @@
 import Link from "next/link";
-import { SITE_NAME } from "@/lib/constants";
-
-const footerLinks = {
-  Vendors: [{ label: "All Vendors", href: "/vendors" }],
-  Games: [{ label: "All Games", href: "/games" }],
-  Resources: [
-    { label: "Learn", href: "/learn" },
-    { label: "Glossary", href: "/tools/glossary" },
-    { label: "FFB Configurator", href: "/tools/configurator" },
-  ],
-};
+import { Logo } from "@/components/brand/Logo";
+import { getManufacturers } from "@/lib/content/loader";
+import { CATEGORY_LABELS } from "@/lib/content/schema";
+import { getUsedCategories } from "@/lib/content/loader";
+import { SITE_NAME, TAGLINE } from "@/lib/constants";
 
 export function Footer() {
+  const manufacturers = getManufacturers();
+  const categories = getUsedCategories().slice(0, 5);
+
   return (
-    <footer className="bg-muted border-t border-border">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="border-t border-border bg-muted/40">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="space-y-3">
-            <Link href="/" className="text-xl font-bold">
-              <span className="text-primary">FFB</span>{" "}
-              <span>Hub</span>
+            <Link href="/" aria-label="FFB Guide home">
+              <Logo />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              The ultimate sim racing force feedback resource
+            <p className="text-sm uppercase tracking-wide text-muted-foreground">
+              {TAGLINE}
             </p>
           </div>
 
-          {/* Link columns */}
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h3 className="text-sm font-semibold text-foreground mb-3">
-                {title}
-              </h3>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div>
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
+              Manufacturers
+            </h2>
+            <ul className="space-y-2">
+              {manufacturers.map((manufacturer) => (
+                <li key={manufacturer.slug}>
+                  <Link
+                    href={manufacturer.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {manufacturer.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
+              Categories
+            </h2>
+            <ul className="space-y-2">
+              {categories.map((category) => (
+                <li key={category}>
+                  <Link
+                    href={`/categories/${category}`}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {CATEGORY_LABELS[category]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
+              Reference
+            </h2>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/glossary"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Cross-reference matrix
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/manufacturers"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  All manufacturers
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
-          <p>Built for the sim racing community</p>
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row">
+          <p>
+            &copy; {new Date().getFullYear()} {SITE_NAME}
+          </p>
+          <p>
+            Settings terminology belongs to the respective manufacturers. This
+            site is an independent reference.
+          </p>
         </div>
       </div>
     </footer>

@@ -1,0 +1,13 @@
+# Cloudflare redirect rules — same file format on Workers static assets and on
+# Pages. Copied into the build output as-is. Order matters: the first match wins.
+# The site moved from a hardware-centric structure to a settings-centric one.
+# Both slash forms are listed because the export uses trailing slashes.
+
+/vendors            /manufacturers/        301
+/vendors/           /manufacturers/        301
+/vendors/*          /manufacturers/:splat  301
+/tools/glossary     /glossary/             301
+/tools/glossary/    /glossary/             301
+/tools/glossary/*   /glossary/             301
+/tools              /glossary/             301
+/tools/             /glossary/             301

@@ -1,50 +1,63 @@
 @import "tailwindcss";
 
-/* ── Light Mode (default) ── */
+/*
+ * Brand palette: #1E6BFF electric blue, #0D1117 dark, #4CA9FF secondary blue,
+ * #8B95A7 neutral, #F2F4F7 light. Card and border steps are derived from the
+ * dark ink, since the brand defines no separate surface values.
+ *
+ * `--link` exists because #1E6BFF on #0D1117 is only ~3.6:1. Solid fills keep
+ * the electric blue; inline text links use the secondary blue on dark (~7.3:1)
+ * and the electric blue on light. Legibility over literalism.
+ */
+
+/* ── Light Mode ── */
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --foreground: #0d1117;
+  --muted: #f2f4f7;
+  /* #8B95A7 is only ~3:1 on white, so light mode darkens the same hue. */
+  --muted-foreground: #5c6675;
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --primary: #6366f1;
+  --card-foreground: #0d1117;
+  --border: #e2e6ec;
+  --input: #e2e6ec;
+  --primary: #1e6bff;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --accent: #f97316;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
+  --link: #1e6bff;
+  --secondary: #f2f4f7;
+  --secondary-foreground: #0d1117;
+  --accent: #4ca9ff;
+  --accent-foreground: #0d1117;
+  --destructive: #e5484d;
   --destructive-foreground: #ffffff;
-  --ring: #6366f1;
+  --ring: #1e6bff;
   --radius: 0.625rem;
-  --gradient-start: #6366f1;
-  --gradient-end: #8b5cf6;
+  --gradient-start: #1e6bff;
+  --gradient-end: #4ca9ff;
 }
 
-/* ── Dark Mode ── */
+/* ── Dark Mode (the brand's default) ── */
 .dark {
-  --background: #0b0f1a;
-  --foreground: #f1f5f9;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --card: #111827;
-  --card-foreground: #f1f5f9;
-  --border: #1e293b;
-  --input: #1e293b;
-  --primary: #818cf8;
-  --primary-foreground: #0b0f1a;
-  --secondary: #1e293b;
-  --secondary-foreground: #f1f5f9;
-  --accent: #fb923c;
-  --accent-foreground: #0b0f1a;
-  --destructive: #f87171;
-  --destructive-foreground: #0b0f1a;
-  --ring: #818cf8;
-  --gradient-start: #818cf8;
-  --gradient-end: #a78bfa;
+  --background: #0d1117;
+  --foreground: #f2f4f7;
+  --muted: #161d26;
+  --muted-foreground: #8b95a7;
+  --card: #12181f;
+  --card-foreground: #f2f4f7;
+  --border: #1f2833;
+  --input: #1f2833;
+  --primary: #1e6bff;
+  --primary-foreground: #ffffff;
+  --link: #4ca9ff;
+  --secondary: #161d26;
+  --secondary-foreground: #f2f4f7;
+  --accent: #4ca9ff;
+  --accent-foreground: #0d1117;
+  --destructive: #ff6369;
+  --destructive-foreground: #0d1117;
+  --ring: #4ca9ff;
+  --gradient-start: #1e6bff;
+  --gradient-end: #4ca9ff;
 }
 
 @theme inline {
@@ -58,6 +71,7 @@
   --color-input: var(--input);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-link: var(--link);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
@@ -71,8 +85,8 @@
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 0.25rem);
   --radius-xl: calc(var(--radius) + 0.5rem);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, "SFMono-Regular", "Menlo", monospace;
 }
 
 body {
@@ -81,6 +95,62 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Rendered markdown from the content layer ── */
+.content-prose {
+  color: var(--muted-foreground);
+  line-height: 1.75;
+}
+.content-prose > * + * {
+  margin-top: 1rem;
+}
+.content-prose h2,
+.content-prose h3 {
+  color: var(--foreground);
+  font-weight: 600;
+  margin-top: 1.75rem;
+}
+.content-prose h2 {
+  font-size: 1.25rem;
+}
+.content-prose h3 {
+  font-size: 1.05rem;
+}
+.content-prose strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.content-prose a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.content-prose ul,
+.content-prose ol {
+  padding-left: 1.25rem;
+}
+.content-prose ul {
+  list-style: disc;
+}
+.content-prose ol {
+  list-style: decimal;
+}
+.content-prose li + li {
+  margin-top: 0.375rem;
+}
+.content-prose code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  background: var(--muted);
+  color: var(--foreground);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+}
+.content-prose blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  font-style: italic;
 }
 
 /* ── Scrollbar ── */

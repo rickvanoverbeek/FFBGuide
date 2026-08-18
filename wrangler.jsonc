@@ -1,0 +1,15 @@
+{
+  // Static-only Worker: no `main` entry point, just the exported site.
+  // The Worker name here must match the Worker name in the Cloudflare
+  // dashboard, or a git-triggered build will fail.
+  "name": "ffb-guide",
+  "compatibility_date": "2026-08-18",
+  "assets": {
+    "directory": "./out",
+    // `next build` with `trailingSlash: true` emits path/index.html, which this
+    // serves at /path/ — Cloudflare's recommended setting for SSG output.
+    "html_handling": "auto-trailing-slash",
+    // Serves out/404.html with a 404 status for anything unmatched.
+    "not_found_handling": "404-page"
+  }
+}

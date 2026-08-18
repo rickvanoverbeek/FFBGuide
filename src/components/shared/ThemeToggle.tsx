@@ -13,7 +13,7 @@ export function ThemeToggle() {
       className={cn(
         "inline-flex items-center justify-center rounded-md p-2",
         "text-muted-foreground hover:text-foreground",
-        "hover:bg-accent transition-colors",
+        "hover:bg-muted transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       )}
       aria-label="Toggle theme"

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { NAV_ITEMS, SITE_NAME } from "@/lib/constants";
+import { Logo } from "@/components/brand/Logo";
+import { NAV_ITEMS } from "@/lib/constants";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -32,10 +33,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         )}
       >
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <span className="text-lg font-bold">{SITE_NAME}</span>
+          <Logo wordmarkClassName="text-lg" markClassName="h-7 w-7" />
           <button
             onClick={onClose}
-            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             aria-label="Close menu"
           >
             <X className="h-5 w-5" />
@@ -44,41 +45,15 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
         <nav className="flex flex-col p-4 space-y-1">
           {NAV_ITEMS.map((item) => (
-            <div key={item.href}>
-              <Link
-                href={item.href}
-                onClick={onClose}
-                className="flex items-center rounded-md px-3 py-3 text-base font-medium text-foreground hover:bg-accent transition-colors"
-              >
-                {item.label}
-              </Link>
-
-              {"children" in item && item.children && (
-                <div className="ml-4 flex flex-col space-y-1">
-                  {item.children.map((child) => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      onClick={onClose}
-                      className="flex items-center rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-
-          <div className="pt-4 border-t border-border mt-4">
             <Link
-              href="/account/login"
+              key={item.href}
+              href={item.href}
               onClick={onClose}
-              className="flex items-center justify-center rounded-md px-3 py-3 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="flex items-center rounded-md px-3 py-3 text-base font-medium text-foreground hover:bg-muted transition-colors"
             >
-              Sign In
+              {item.label}
             </Link>
-          </div>
+          ))}
         </nav>
       </div>
     </>

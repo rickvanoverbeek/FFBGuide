@@ -33,7 +33,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           variant === "destructive" &&
             "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
           variant === "link" &&
-            "text-primary underline-offset-4 hover:underline",
+            "text-link underline-offset-4 hover:underline",
           // Sizes
           size === "sm" && "h-8 rounded-md px-3 text-xs",
           size === "md" && "h-10 rounded-lg px-4 text-sm",
