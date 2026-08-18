@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Zap, Table2, Factory, Layers } from "lucide-react";
+import { TAGLINE } from "@/lib/constants";
 import { CATEGORY_LABELS } from "@/lib/content/schema";
 import {
   getConcepts,
@@ -28,19 +29,20 @@ export default function HomePage() {
       <section className="relative overflow-hidden py-20 sm:py-28">
         <div className="absolute inset-0 bg-gradient-to-br from-gradient-start/10 via-transparent to-gradient-end/10" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-1.5 text-sm text-muted-foreground">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-1.5 text-xs uppercase tracking-wide text-muted-foreground">
             <Zap className="h-3.5 w-3.5 text-accent" />
-            Force feedback settings, translated between manufacturers
+            {TAGLINE}
           </div>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Your wheel calls it{" "}
+          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+            The encyclopedia of{" "}
             <span className="bg-gradient-to-r from-gradient-start to-gradient-end bg-clip-text text-transparent">
-              something else
+              force feedback settings
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            What each setting actually does, what you feel when you change it, and
-            which term every other manufacturer uses for the same thing.
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
+            Every setting in every wheel base&apos;s software: what it does, how it
+            changes the feel, and what the other manufacturers call the same
+            thing. Written from their own documentation.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
