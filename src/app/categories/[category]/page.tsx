@@ -6,6 +6,7 @@ import { SettingCard } from "@/components/settings/SettingCard";
 import { CATEGORIES, CATEGORY_LABELS, type Category } from "@/lib/content/schema";
 import {
   getConceptsByCategory,
+  getManufacturers,
   getSettings,
   getUsedCategories,
 } from "@/lib/content/loader";
@@ -42,6 +43,14 @@ export default async function CategoryPage({ params }: Props) {
   const settings = getSettings();
   const others = getUsedCategories().filter((c) => c !== category);
 
+  const categorySettings = settings.filter(
+    (setting) => setting.category === category
+  );
+  const coveredManufacturers = new Set(
+    categorySettings.map((setting) => setting.manufacturer)
+  ).size;
+  const totalManufacturers = getManufacturers().length;
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <Breadcrumbs
@@ -55,9 +64,19 @@ export default async function CategoryPage({ params }: Props) {
         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {CATEGORY_LABELS[category]}
         </h1>
-        <p className="mt-3 text-lg text-muted-foreground">
-          {concepts.length} concept{concepts.length === 1 ? "" : "s"} in this
-          category, with every manufacturer&apos;s term for them.
+        <p className="mt-3 text-pretty text-lg text-muted-foreground">
+          What these controls do, what they change about the feel, and the name
+          each manufacturer gives them.
+        </p>
+        {/* One expression, one text node: JSX drops a space between an
+            expression and a line break, and React separates adjacent text
+            children with comment markers. */}
+        <p className="mt-3 text-sm text-muted-foreground">
+          {[
+            `${concepts.length} ${concepts.length === 1 ? "concept" : "concepts"}`,
+            `${categorySettings.length} ${categorySettings.length === 1 ? "setting" : "settings"}`,
+            `${coveredManufacturers} of ${totalManufacturers} manufacturers`,
+          ].join(" · ")}
         </p>
       </section>
 
